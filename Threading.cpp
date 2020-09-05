@@ -81,7 +81,7 @@ int main()
 		//OS will take some time to create thread
 		t3.join();
 		cout << "After join" << endl;
-		//Here min will wait untill thread is finished
+		//Here main will wait untill thread is finished
 		//Calling join multiple times program ill be terminated.
 		if (t3.joinable())
 			t3.join();
