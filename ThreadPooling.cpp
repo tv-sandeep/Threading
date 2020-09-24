@@ -12,15 +12,18 @@ public:
 
 	explicit ThreadPool(std::size_t numThreads)
 	{
+		printf("ThreadPool constructor\n");
 		start(numThreads);
 	}
 	~ThreadPool()
 	{
+		printf("ThreadPool destructor\n");
 		stop();
 	}
 
 	void enqueue(Task task)
 	{
+		printf("Enqueue\n");
 		{
 			std::unique_lock<std::mutex> lock(m_EventMutex);
 			m_QueueTasks.emplace(std::move(task));
@@ -38,6 +41,7 @@ private:
 	std::queue<Task> m_QueueTasks;
 	void start(std::size_t numThreads)
 	{
+		printf("Start\n");
 		m_VectThreads.emplace_back([=]{
 			while (true)
 			{
@@ -46,24 +50,29 @@ private:
 					std::unique_lock<std::mutex> lock(m_EventMutex);
 					m_EventVar.wait(lock, [=] { return m_Stopping || !m_QueueTasks.empty(); });
 				
+					printf("Task\n");
 					if (m_Stopping && m_QueueTasks.empty())
 						break;
+					printf("Task\n");
 
 					task = std::move(m_QueueTasks.front());
 					m_QueueTasks.pop();
 				}
+				printf("task()\n");
 				task();
 			}
 		});
 	}
 	void stop() noexcept
 	{
+		printf("Stop\n");
 		{
 			std::unique_lock<std::mutex> lock(m_EventMutex);
 			m_Stopping = true;
 		}
 		m_EventVar.notify_all();
 
+		printf("After notify all\n");
 		for (auto& thread : m_VectThreads)
 			thread.join();
 	}

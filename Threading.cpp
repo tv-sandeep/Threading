@@ -96,8 +96,9 @@ int main()
 		//Although it is detached, it will be executed but we wont get the result
 		// because we detachd it from main thread
 		cout << "After Detach" << endl;
-		//t4.join(); //Just to check
+		t4.join(); //Just to check
 		if (t4.joinable())
 			t4.detach();//Double detach will end up termination
 	}
+	return 1;
 }
